@@ -6,11 +6,10 @@ on:
     branches: [main, master]
 
 jobs:
-  setup:
-    uses: ./.github/workflows/setup.yml
   test:
     runs-on: ubuntu-latest
     steps:
+      - uses: ./.github/actions/setup.yml
       - uses: actions/cache@v3
         id: playwright-cache
         with:
