@@ -1,17 +1,19 @@
 runs:
   using: "composite"
-  shell: bash
   steps:
     - name: Install pnpm
+      shell: bash
       uses: pnpm/action-setup@v2
       with:
         version: 7
 
     - name: Install Node.js
+      shell: bash
       uses: actions/setup-node@v3
       with:
         node-version: 16
         cache: "pnpm"
 
     - name: Install pnpm dependencies
+      shell: bash
       run: pnpm install
