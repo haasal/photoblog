@@ -7,8 +7,9 @@ on:
 
 jobs:
   setup:
-    runs-on: ubuntu-latest
     uses: ./.github/workflows/setup.yml
+  test:
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/cache@v3
         id: playwright-cache
