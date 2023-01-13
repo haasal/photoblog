@@ -1,0 +1,15 @@
+---
+const menuItems = ["Home", "Gallerie", "About"];
+---
+
+<nav class="w-64 text-xl">
+  <ul class="flex justify-between">
+    {
+      menuItems.map((item) => (
+        <li class="underline">
+          <a href={item}>{item}</a>
+        </li>
+      ))
+    }
+  </ul>
+</nav>
