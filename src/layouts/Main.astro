@@ -1,0 +1,23 @@
+---
+import Nav from "../components/Nav.astro";
+import "../styles/base.css";
+
+const { title } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=1920, initial-scale=1.0" />
+    <title>{title}</title>
+  </head>
+  <body class="flex flex-col items-center w-screen space-y-14 my-14">
+    <Nav />
+    <h1 class="text-5xl">
+      {title}
+    </h1>
+    <slot />
+  </body>
+</html>
