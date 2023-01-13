@@ -10,22 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # Setup
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - uses: pnpm/action-setup@v2
-        name: Install pnpm
-        with:
-          version: 7
-
-      - name: Install Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 16
-          cache: "pnpm"
-
-      - name: Install pnpm dependencies
-        run: pnpm install
+      - uses: ./.github/actions/setup
+        name: Setup environment
 
       # Formatting
       - name: Check formatting
