@@ -1,7 +1,8 @@
 {
-  "conventionalCommits.scopes": [
-    "routing",
-    "project", // dependencies, config files etc.
-    "content" // astro, style...
-  ]
+    "conventionalCommits.scopes": [
+        "routing",
+        "project",
+        "content",
+        "ssr"
+    ]
 }
