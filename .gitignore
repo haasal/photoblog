@@ -22,3 +22,6 @@ pnpm-debug.log*
 /playwright-report/
 /playwright/.cache/
 .vercel
+
+# Local Netlify folder
+.netlify
