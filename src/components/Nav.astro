@@ -7,7 +7,9 @@ const menuItems = ["Home", "Gallerie", "About"];
     {
       menuItems.map((item) => (
         <li class="underline">
-          <a href={item == "Home" ? "/" : item.toLocaleLowerCase()}>{item}</a>
+          <a href={item == "Home" ? "/" : "/" + item.toLocaleLowerCase()}>
+            {item}
+          </a>
         </li>
       ))
     }
