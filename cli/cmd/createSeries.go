@@ -35,7 +35,7 @@ func getSelectedImages(images *mongo.Collection, imageTitles []string) ([]bson.M
 	return result, nil
 }
 
-func createSeries(imageTitles []string, title string, descr string, private bool) error {
+func createSeries(imageTitles []string, title string, descr string, private bool, password string) error {
 	client, err := conn.Setup()
 	if err != nil {
 		return err
@@ -61,6 +61,10 @@ func createSeries(imageTitles []string, title string, descr string, private bool
 		{"images", selectedImages},
 	}
 
+	if private {
+		newSerie = append(newSerie, bson.E{"password", password})
+	}
+
 	if _, err := series.InsertOne(context.TODO(), newSerie); err != nil {
 		return err
 	}
@@ -72,13 +76,14 @@ func init() {
 	var title string
 	var descr string
 	var private bool
+	var password string
 
 	var createSeriesCmd = &cobra.Command{
 		Use:   "createSeries [...images]",
 		Short: "Create a series from specified images",
 		Args:  cobra.MinimumNArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return createSeries(args, title, descr, private)
+			return createSeries(args, title, descr, private, password)
 		},
 	}
 
@@ -88,4 +93,6 @@ func init() {
 	createSeriesCmd.MarkFlagRequired("title")
 	createSeriesCmd.Flags().StringVarP(&descr, "descr", "d", "", "A Description of the serie")
 	createSeriesCmd.Flags().BoolVar(&private, "private", false, "Sets the serie as private")
+	createSeriesCmd.Flags().StringVarP(&password, "password", "p", "", "The collection password")
+	createSeriesCmd.MarkFlagsRequiredTogether("private", "password")
 }
