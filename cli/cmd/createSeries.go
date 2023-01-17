@@ -6,6 +6,7 @@ package cmd
 import (
 	"cli/pkg/conn"
 	"context"
+	"fmt"
 
 	"github.com/spf13/cobra"
 	"go.mongodb.org/mongo-driver/bson"
@@ -13,13 +14,13 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func getSelectedImages(images *mongo.Collection, imageTitles []string) ([]bson.M, error) {
+func getSelectedImages(images *mongo.Collection, imageTitles []string) (bson.A, error) {
 	imageTitlesBson := bson.A{}
 	for _, title := range imageTitles {
 		imageTitlesBson = append(imageTitlesBson, title)
 	}
 
-	projection := bson.D{{"title", 1}}
+	projection := bson.D{{"_id", 1}}
 	filter := bson.D{{"title", bson.D{{"$in", imageTitlesBson}}}}
 
 	cur, err := images.Find(context.TODO(), filter, options.Find().SetProjection(projection))
@@ -27,12 +28,20 @@ func getSelectedImages(images *mongo.Collection, imageTitles []string) ([]bson.M
 		return nil, err
 	}
 
-	var result []bson.M
-	if err := cur.All(context.TODO(), &result); err != nil {
-		return nil, err
+	resultArr := bson.A{}
+	for cur.Next(context.TODO()) {
+		var result bson.M
+		if err := cur.Decode(&result); err != nil {
+			return nil, err
+		}
+		id, ok := result["_id"]
+		if !ok {
+			return nil, fmt.Errorf("no _id in images array")
+		}
+		resultArr = append(resultArr, id)
 	}
 
-	return result, nil
+	return resultArr, nil
 }
 
 func createSeries(imageTitles []string, title string, descr string, private bool, password string) error {
