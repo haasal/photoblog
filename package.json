@@ -19,6 +19,7 @@
     "@types/minio": "^7.0.15",
     "astro": "^1.9.2",
     "dotenv": "^16.0.3",
+    "ioredis": "^5.2.5",
     "minio": "^7.0.32",
     "mongodb": "4.13",
     "prettier": "^2.8.2",
