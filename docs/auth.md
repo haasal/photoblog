@@ -1,6 +1,5 @@
 # Authentication flow
 
-
 An authentication flow for a private image series
 
 ## Diagram
