@@ -1,5 +1,5 @@
 import { Redis } from "ioredis";
-import { getEnv } from "./util";
+import { getEnv } from "../../api/files/lib/util.js";
 import * as dotenv from "dotenv";
 
 dotenv.config();

@@ -1,7 +1,7 @@
 import type { Document } from "mongodb";
 import { db } from "./mongo";
 import { redis } from "./redis";
-import { getFile } from "./minio";
+import { getFile } from "./minio.js";
 
 export async function getSerie(title: string): Promise<Document> {
   const cursor = db.collection("series").aggregate([

@@ -4,7 +4,9 @@ import * as dotenv from "dotenv";
 
 dotenv.config();
 
-let bucketName = getEnv("BUCKET_NAME");
+export const bucketName = getEnv("BUCKET_NAME");
+
+console.log("Connecting to bucket");
 
 export const bucket = new Client({
   endPoint: getEnv("BUCKET_ENDPOINT"),
