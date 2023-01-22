@@ -1,16 +1,21 @@
-package handler
+package main
 
 import (
 	"context"
+	"encoding/base64"
 	"fmt"
 	"io"
 	"log"
-	"net/http"
 	"os"
 
+	"github.com/aws/aws-lambda-go/events"
+	"github.com/aws/aws-lambda-go/lambda"
+	"github.com/joho/godotenv"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 )
+
+var minioClient *minio.Client = nil
 
 func getEnv(name string) string {
 	env, ok := os.LookupEnv(name)
@@ -22,6 +27,11 @@ func getEnv(name string) string {
 
 func getMinioConnection() (*minio.Client, error) {
 	// TODO: Add ssl
+	if minioClient != nil {
+		log.Println("Using cached minio client")
+		return minioClient, nil
+	}
+
 	hostname := getEnv("BUCKET_ENDPOINT")
 	port := getEnv("BUCKET_PORT")
 	endpoint := fmt.Sprintf("%s:%s", hostname, port)
@@ -37,33 +47,44 @@ func getFile(client *minio.Client, fileName string, bucketName string) (*minio.O
 	return client.GetObject(context.Background(), bucketName, fileName, minio.GetObjectOptions{})
 }
 
-func sendFile(w http.ResponseWriter, file *minio.Object) error {
-	_, err := io.Copy(w, file)
+func getFileResponse(file *minio.Object) (*events.APIGatewayProxyResponse, error) {
+	buf, err := io.ReadAll(file)
 	if err != nil {
-		return fmt.Errorf("failed to read file: %s", err)
+		return nil, fmt.Errorf("failed to read file: %s", err)
 	}
-	return nil
+
+	encodedBuf := base64.StdEncoding.EncodeToString(buf)
+
+	return &events.APIGatewayProxyResponse{
+		StatusCode:      200,
+		Body:            encodedBuf,
+		IsBase64Encoded: true,
+	}, nil
 }
 
-func Handler(w http.ResponseWriter, r *http.Request) {
+func handler(r events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
+	godotenv.Load("../../.env")
+
 	minioClient, err := getMinioConnection()
 
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	fileName := r.URL.Path[len("/api/files/"):]
+	// fileName := r.URL.Path[len("/api/files/"):]
+	fileName := "psylo.jpg"
 	bucketName := getEnv("BUCKET_NAME")
 
 	file, err := getFile(minioClient, fileName, bucketName)
+	// TODO: Proper error handling
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte(fmt.Sprintf("File %s not found in %s", fileName, bucketName)))
-		return
+		log.Fatalln(err)
 	}
 	defer file.Close()
 
-	if err := sendFile(w, file); err != nil {
-		log.Fatalln("Failed to send file:", err)
-	}
+	return getFileResponse(file)
+}
+
+func main() {
+	lambda.Start(handler)
 }
