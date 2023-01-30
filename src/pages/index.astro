@@ -1,5 +1,7 @@
 ---
 import Main from "../layouts/Main.astro";
+
+export const prerender = true;
 ---
 
 <Main title="Alexanders FotoBlog">
@@ -7,4 +9,6 @@ import Main from "../layouts/Main.astro";
     Eine Sammlung von vielen Fotos, die ich während wunderschönder
     Sonnenuntergänge in der ganzen Welt geschossen habe.
   </p>
+
+  <img src="/api/image.jpg" alt="psylo" class="max-h-[90vh]" loading="lazy" />
 </Main>
