@@ -1,21 +1,25 @@
-package main
+package handler
 
 import (
 	"context"
-	"encoding/base64"
 	"fmt"
 	"io"
 	"log"
+	"net/http"
 	"os"
 
-	"github.com/aws/aws-lambda-go/events"
-	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/joho/godotenv"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 )
 
+const ApiErrorFileMissing = "file not found"
+const ApiErrorFailedMinioConnection = "failed to establish connection to image backend"
+const ApiErrorFailedSendingFile = "file couldn't be sent to client"
+const ApiErrorNoFilePath = "no file path specified in query"
+
 var minioClient *minio.Client = nil
+var bucketName string
 
 func getEnv(name string) string {
 	env, ok := os.LookupEnv(name)
@@ -47,44 +51,34 @@ func getFile(client *minio.Client, fileName string, bucketName string) (*minio.O
 	return client.GetObject(context.Background(), bucketName, fileName, minio.GetObjectOptions{})
 }
 
-func getFileResponse(file *minio.Object) (*events.APIGatewayProxyResponse, error) {
-	buf, err := io.ReadAll(file)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read file: %s", err)
-	}
-
-	encodedBuf := base64.StdEncoding.EncodeToString(buf)
-
-	return &events.APIGatewayProxyResponse{
-		StatusCode:      200,
-		Body:            encodedBuf,
-		IsBase64Encoded: true,
-	}, nil
-}
-
-func handler(r events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
-	godotenv.Load("../../.env")
+func Handler(w http.ResponseWriter, r *http.Request) {
+	godotenv.Load("../.env")
 
 	minioClient, err := getMinioConnection()
 
 	if err != nil {
-		log.Fatalln(err)
+		http.Error(w, ApiErrorFailedMinioConnection, http.StatusInternalServerError)
+		return
 	}
 
-	// fileName := r.URL.Path[len("/api/files/"):]
-	fileName := "psylo.jpg"
-	bucketName := getEnv("BUCKET_NAME")
+	fileName := r.URL.Query().Get("file")
+	if fileName == "" {
+		http.Error(w, ApiErrorNoFilePath, http.StatusBadRequest)
+		return
+	}
+
+	if bucketName == "" {
+		bucketName = getEnv("BUCKET_NAME")
+	}
 
 	file, err := getFile(minioClient, fileName, bucketName)
-	// TODO: Proper error handling
 	if err != nil {
-		log.Fatalln(err)
+		http.Error(w, ApiErrorFileMissing, http.StatusNotFound)
+		return
 	}
 	defer file.Close()
 
-	return getFileResponse(file)
-}
-
-func main() {
-	lambda.Start(handler)
+	if _, err := io.Copy(w, file); err != nil {
+		http.Error(w, ApiErrorFailedSendingFile, http.StatusNotFound)
+	}
 }
