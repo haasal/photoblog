@@ -15,18 +15,19 @@
   },
   "dependencies": {
     "@astrojs/netlify": "^1.3.0",
-    "@astrojs/tailwind": "^2.1.3",
+    "@astrojs/tailwind": "^3.0.1",
+    "@astrojs/vercel": "^3.0.0",
     "@types/minio": "^7.0.15",
-    "@types/node": "^18",
-    "astro": "^1.9.2",
+    "@types/node": "^18.11.18",
+    "astro": "^2.0.4",
     "dotenv": "^16.0.3",
-    "ioredis": "^5.2.5",
+    "ioredis": "^5.3.0",
     "minio": "^7.0.32",
-    "mongodb": "4.13",
-    "prettier": "^2.8.2",
+    "mongodb": "~4.13.0",
+    "prettier": "^2.8.3",
     "tailwindcss": "^3.2.4"
   },
   "devDependencies": {
-    "@playwright/test": "^1.29.2"
+    "@playwright/test": "^1.30.0"
   }
 }
