@@ -9,10 +9,10 @@ sequenceDiagram
     participant Client
     participant Server
     participant DB
-    participant Store
     participant Redis
     Client->>Server: GET /series/foo?password=***
-    Server->>DB: GET foo if password correct
+    Server-->>Redis: Get cached series
+    Server->>DB: GET foo if password correct/public
     DB->>Server: Returns requested series
     Note left of Server: Signs JWT with a list<br>of requested images
     Server->>Client: Returns JWT and redirects to series page
@@ -23,6 +23,25 @@ sequenceDiagram
     Server->>Store: GET /<...>/img1.jpg
     Store-->>Client: Sends requested image/object
 ```
+
+## JWT flow on GET requests
+
+```mermaid
+flowchart TB
+    A["GET /series/{name}"]
+    A --> B{JWT present/valid?}
+    B --> |yes| C1{Requested series in claims?}
+    C1 --> |yes| C1D1[Send requested images]
+    B --> |no| C2{Password supplied?}
+    C2 --> |yes| C2D1[xxx]
+    C2 --> |no| C2D2[Check DB]
+```
+
+```mermaid
+flowchart TB
+    B["GET /series/[name]/[image]"]
+```
+
 
 ## Advantages
 
