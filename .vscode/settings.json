@@ -1,3 +1,9 @@
 {
-  "conventionalCommits.scopes": ["routing", "project", "content", "ssr"]
+  "conventionalCommits.scopes": [
+    "routing",
+    "project",
+    "content",
+    "ssr",
+    "api"
+  ]
 }

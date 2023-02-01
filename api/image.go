@@ -51,7 +51,7 @@ func getFile(client *minio.Client, fileName string, bucketName string) (*minio.O
 	return client.GetObject(context.Background(), bucketName, fileName, minio.GetObjectOptions{})
 }
 
-func Handler(w http.ResponseWriter, r *http.Request) {
+func ImageHandler(w http.ResponseWriter, r *http.Request) {
 	godotenv.Load("../.env")
 
 	minioClient, err := getMinioConnection()
