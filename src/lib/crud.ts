@@ -16,3 +16,7 @@ export async function getSerie(title: string): Promise<Document> {
 
   return cursor.toArray();
 }
+
+export async function getImage(title:string) {
+  return await db.collection("images").findOne({title: title})
+}
