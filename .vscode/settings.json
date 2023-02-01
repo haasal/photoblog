@@ -4,6 +4,7 @@
     "project",
     "content",
     "ssr",
-    "api"
+    "api",
+    "endpoints"
   ]
 }
