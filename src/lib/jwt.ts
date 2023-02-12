@@ -1,38 +1,43 @@
-import * as jwt from "jsonwebtoken"
-import { getEnv } from "./util"
-
-const secret = getEnv("SECRET_KEY")
-
-export interface Collection {
-    bucket: string,
-    files: Array<string>
-}
+import { Err, Ok, Result } from "./result";
+import { getEnv } from "./util";
+import * as jwt from "jsonwebtoken";
 
 export interface Claims {
-    collections: Array<Collection> 
+  collections: Array<string>;
 }
 
-export function genToken(claims: Claims, exp: string = "1h"): string {
-    return jwt.sign(claims, secret, {expiresIn: exp})
+function isClaims(claims: any): claims is Claims {
+  return (
+    typeof claims.collections == "object" &&
+    typeof claims.collections[0] == "string"
+  );
 }
 
-export function appendCollection(collections: Array<Collection>, collection: Collection, exp: string = "1h"):string {
-    collections.push(collection)
+const secret = getEnv("SECRET_KEY");
+const expiration = "1h";
 
-    const newClaims: Claims = {
-        collections: collections 
-    } 
-
-    return jwt.sign(newClaims, secret, {expiresIn: exp})
+export function genToken(collection: string) {
+  const claims: Claims = { collections: [collection] };
+  return jwt.sign(claims, secret, { expiresIn: expiration });
 }
 
-export function verifyToken(token: string): jwt.JwtPayload {
-    // not a very good verification
-    const claims = jwt.verify(token, secret)
-    if (typeof claims == "string") {
-        throw "token is string (not object)"
-    }
-
-    return claims  
+export function appendCollection(collections: string[], collection: string) {
+  collections.push(collection);
+  const claims: Claims = { collections: collections };
+  return jwt.sign(claims, secret, { expiresIn: expiration });
 }
 
+export function decodeToken(token: string): Result<Claims> {
+  let tokenClaims;
+  try {
+    tokenClaims = jwt.verify(token, secret);
+  } catch (err) {
+    return Err("failed verification: " + err);
+  }
+
+  if (!isClaims(tokenClaims)) {
+    return Err("invalid claims format");
+  }
+
+  return Ok(tokenClaims);
+}

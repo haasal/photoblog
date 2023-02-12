@@ -1,22 +1,33 @@
-import type { Document } from "mongodb";
 import { db } from "./mongo";
+import { Err, Ok, Result } from "./result";
 
-export async function getSerie(title: string): Promise<Document> {
-  const cursor = db.collection("series").aggregate([
-    { $match: { title: title } },
+// doesn't check if collection exists
+export async function isPrivate(collection: string): Promise<
+  Result<{
+    private: boolean;
+    password: string;
+  }>
+> {
+  let cur = db.collection("test").aggregate([
     {
-      $lookup: {
-        from: "images",
-        localField: "images",
-        foreignField: "_id",
-        as: "images",
+      $match: { title: collection },
+    },
+    {
+      $project: {
+        _id: 0,
+        password: { $ifNull: ["$password", ""] },
+        private: {
+          $in: [true, "$images.private"],
+        },
       },
     },
   ]);
 
-  return cursor.toArray();
-}
+  const result = await cur.next();
 
-export async function getImage(title:string) {
-  return await db.collection("images").findOne({title: title})
+  if (!result) {
+    return Err("collection not found");
+  }
+
+  return Ok({ private: result.private, password: result.password });
 }
