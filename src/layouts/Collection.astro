@@ -1,0 +1,28 @@
+---
+import Nav from "../components/Nav.astro";
+import Meta from "../components/basic/Meta.astro";
+import Body from "../components/basic/Body.astro";
+import "../styles/base.css";
+
+const { frontmatter } = Astro.props;
+const { collection } = Astro.params;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <Meta />
+    <title>{frontmatter.title}</title>
+  </head>
+  <Body>
+    <Nav />
+    <h1 class="text-5xl">{collection}</h1>
+    <slot />
+  </Body>
+
+  <style is:global>
+    h1 {
+      @apply text-5xl;
+    }
+  </style>
+</html>

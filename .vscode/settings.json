@@ -6,5 +6,6 @@
     "ssr",
     "api",
     "endpoints"
-  ]
+  ],
+  "prettier.documentSelectors": ["**/*.astro"]
 }

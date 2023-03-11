@@ -1,0 +1,4 @@
+---
+layout: "../../../layouts/Collection.astro"
+---
+
