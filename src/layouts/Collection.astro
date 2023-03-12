@@ -5,10 +5,9 @@ import Body from "../components/basic/Body.astro";
 import "../styles/base.css";
 
 const { frontmatter } = Astro.props;
-const { collection } = Astro.params;
+const { collection } = Astro.params; // TODO: FIX to represent file name
 ---
 
-<!DOCTYPE html>
 <html lang="en">
   <head>
     <Meta />
@@ -16,13 +15,15 @@ const { collection } = Astro.params;
   </head>
   <Body>
     <Nav />
-    <h1 class="text-5xl">{collection}</h1>
     <slot />
   </Body>
-
   <style is:global>
     h1 {
       @apply text-5xl;
+    }
+
+    img {
+      @apply w-40;
     }
   </style>
 </html>

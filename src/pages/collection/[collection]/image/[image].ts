@@ -14,7 +14,7 @@ export const get: APIRoute = async ({ params, url }) => {
   );
 
   if (!resp) {
-    return new Response("image not found", { status: 404 });
+    return new Response(`${imagePath} not found`, { status: 404 });
   }
 
   // check image authorization
