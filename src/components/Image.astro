@@ -1,0 +1,12 @@
+---
+import { collections } from "../lib/store";
+
+const { path, alt } = Astro.props;
+const collection = Astro.props.collection ?? Astro.params.collection;
+const password = collections.get(collection);
+const imageUrl = `/collection/${collection}/image/${path}?password=${password}`;
+---
+
+<a href={imageUrl}>
+  <img src={imageUrl} alt={alt ?? path} />
+</a>

@@ -18,6 +18,7 @@ export default async function middleware(request: Request) {
     `${url.origin}/collection/${collection}/authorized.json`
   );
   authorizationUrl.searchParams.set("password", password);
+
   let resp = (await (
     await fetch(authorizationUrl.toString())
   ).json()) as AuthorizationResponse;

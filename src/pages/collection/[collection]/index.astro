@@ -1,0 +1,16 @@
+---
+const collections = await Astro.glob("../../../collections/*.mdx");
+
+const { collection } = Astro.params!;
+const collectionDoc = collections.find(
+  (collectionDoc) => collectionDoc.frontmatter.title === collection
+);
+
+if (!collectionDoc) {
+  return new Response("collection not found", { status: 404 });
+}
+
+const { Content } = collectionDoc;
+---
+
+<Content />

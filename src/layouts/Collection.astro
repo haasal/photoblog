@@ -3,14 +3,24 @@ import Nav from "../components/Nav.astro";
 import Meta from "../components/basic/Meta.astro";
 import Body from "../components/basic/Body.astro";
 import "../styles/base.css";
+import { collections } from "../lib/store";
 
 const { frontmatter } = Astro.props;
-const { collection } = Astro.params; // TODO: FIX to represent file name
+
+const password = Astro.url.searchParams.get("password");
+
+if (!password) {
+  return new Response("no password supplied", { status: 401 });
+}
+
+const title = frontmatter.title!;
+collections.set(title, password);
 ---
 
 <html lang="en">
   <head>
     <Meta />
+    <meta />
     <title>{frontmatter.title}</title>
   </head>
   <Body>
@@ -20,10 +30,6 @@ const { collection } = Astro.params; // TODO: FIX to represent file name
   <style is:global>
     h1 {
       @apply text-5xl;
-    }
-
-    img {
-      @apply w-40;
     }
   </style>
 </html>
